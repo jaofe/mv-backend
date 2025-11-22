@@ -9,7 +9,7 @@ Base = declarative_base()
 # Create database engine
 engine = create_engine(
     settings.DATABASE_URL,
-    echo=True,  # Set to False in production
+    echo=False,
     pool_pre_ping=True,
     pool_size=5,
     max_overflow=10
