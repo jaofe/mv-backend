@@ -1,8 +1,12 @@
 import bcrypt
 import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
+from fastapi import HTTPException, status, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordBearer
 from app.config import settings
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 
 def hash_password(password: str) -> str:
@@ -22,9 +26,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     to_encode = data.copy()
     
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
@@ -43,7 +47,7 @@ def verify_token(token: str) -> Optional[dict]:
 
 
 def create_password_reset_token(email: str) -> str:
-    expire = datetime.utcnow() + timedelta(minutes=15)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode = {"sub": email, "type": "password_reset", "exp": expire}
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
@@ -60,3 +64,16 @@ def verify_password_reset_token(token: str) -> Optional[str]:
         return None
     except jwt.InvalidTokenError:
         return None
+
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    payload = verify_token(token)
+    
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    return payload

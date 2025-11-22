@@ -77,6 +77,28 @@ def run_migrations_online() -> None:
 
         with context.begin_transaction():
             context.run_migrations()
+        
+        # Run seeders after migrations
+        run_seeders(connection)
+
+
+def run_seeders(connection):
+    """Run seeders after migrations are applied."""
+    from sqlalchemy.orm import Session
+    from app.species.seeder import seed_species
+    
+    # Create a session from the connection
+    session = Session(bind=connection)
+    
+    try:
+        print("\n--- Running Seeders ---")
+        seed_species(session)
+        print("--- Seeders Completed ---\n")
+    except Exception as e:
+        print(f"Error running seeders: {e}")
+        session.rollback()
+    finally:
+        session.close()
 
 
 if context.is_offline_mode():

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from app.users.router import router as users_router
+from app.species.router import router as species_router
 
 app = FastAPI(
     title="MV Backend API",
@@ -17,6 +18,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(users_router)
+app.include_router(species_router)
 
 @app.get("/")
 async def root():
