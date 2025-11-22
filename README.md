@@ -42,6 +42,15 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento local.
     ALGORITHM="HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES="30"
 
+    # Configurações de Email/SMTP
+    MAIL_USERNAME="seu-email@gmail.com"
+    MAIL_PASSWORD="sua-senha-de-app"
+    MAIL_FROM="seu-email@gmail.com"
+    MAIL_PORT="587"
+    MAIL_SERVER="smtp.gmail.com"
+    MAIL_STARTTLS="True"
+    MAIL_SSL_TLS="False"
+
     # Configurações do Cloudinary (opcional)
     CLOUDINARY_API_KEY=""
     CLOUDINARY_API_SECRET=""
