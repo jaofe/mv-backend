@@ -8,8 +8,8 @@ class User(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    cpf = Column(String, unique=True, nullable=False)
-    phone_number = Column(String, nullable=False)
+    cpf = Column(String, unique=True, nullable=True)
+    phone_number = Column(String, nullable=True)
     is_certified = Column(Boolean, default=False)
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
